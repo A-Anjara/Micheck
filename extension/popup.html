@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mi-check</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body class="popup">
+    <header>
+      <img src="icons/icon32.png" alt="" width="24" height="24" />
+      <h1>Mi-check</h1>
+      <span class="tagline">Détecteur de fausses informations</span>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="text" aria-selected="true">Texte</button>
+      <button role="tab" data-tab="image" aria-selected="false">Image</button>
+    </nav>
+
+    <section id="panel-text" class="panel">
+      <textarea
+        id="text-input"
+        rows="6"
+        maxlength="8000"
+        placeholder="Collez un texte, une citation ou un article à vérifier…"
+      ></textarea>
+      <button id="grab-selection" class="link" type="button">
+        Utiliser le texte sélectionné sur la page
+      </button>
+    </section>
+
+    <section id="panel-image" class="panel" hidden>
+      <label id="dropzone" class="dropzone">
+        <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+        <img id="image-preview" alt="Aperçu de l'image" hidden />
+        <span id="dropzone-hint">Cliquez ou déposez une image ici</span>
+      </label>
+      <p class="hint">Astuce : clic droit sur une image d'une page → « Vérifier cette image avec Mi-check ».</p>
+    </section>
+
+    <button id="verify" class="primary" type="button">Vérifier</button>
+
+    <section id="result" aria-live="polite" hidden></section>
+
+    <details class="settings">
+      <summary>Paramètres</summary>
+      <label for="api-url">URL du serveur Mi-check</label>
+      <div class="row">
+        <input id="api-url" type="url" placeholder="http://localhost:3000" />
+        <button id="save-api" type="button">OK</button>
+      </div>
+    </details>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

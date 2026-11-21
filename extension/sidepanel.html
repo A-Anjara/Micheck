@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mi-check</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body class="sidepanel">
+    <header>
+      <img src="icons/icon32.png" alt="" width="24" height="24" />
+      <h1>Mi-check</h1>
+      <span class="tagline">Détecteur de fausses informations</span>
+    </header>
+
+    <p id="empty" class="empty">
+      Faites défiler votre fil Facebook et cliquez sur
+      <strong>✓ Vérifier</strong> sur un post pour l'analyser ici.
+    </p>
+
+    <section id="result" aria-live="polite" hidden></section>
+
+    <script type="module" src="sidepanel.js"></script>
+  </body>
+</html>

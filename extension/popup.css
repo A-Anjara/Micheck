@@ -1,0 +1,87 @@
+:root {
+  --bg: #180f0c;
+  --surface: #241a16;
+  --border: #3a2c26;
+  --text: #f5f1ef;
+  --muted: #b3a7a1;
+  --green: #6cc671;
+  --teal: #0da99b;
+  font-family: Montserrat, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+}
+
+body.popup { width: 380px; }
+body.sidepanel { min-width: 300px; }
+
+header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+header h1 { font-size: 16px; margin: 0; font-weight: 800; }
+.tagline { color: var(--muted); font-size: 11px; margin-left: auto; }
+
+.tabs { display: flex; gap: 4px; background: var(--surface); padding: 4px; border-radius: 10px; margin-bottom: 10px; }
+.tabs button {
+  flex: 1; padding: 7px; border: 0; border-radius: 7px; cursor: pointer;
+  background: transparent; color: var(--muted); font: inherit; font-weight: 600;
+}
+.tabs button[aria-selected="true"] { background: var(--green); color: #102012; }
+
+textarea, input[type="url"] {
+  width: 100%; background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px; font: inherit; resize: vertical;
+}
+textarea:focus, input:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+
+button.link {
+  background: none; border: 0; color: var(--teal); padding: 4px 0; cursor: pointer; font: inherit; font-size: 12px;
+}
+button.link:hover { text-decoration: underline; }
+
+.dropzone {
+  display: flex; align-items: center; justify-content: center; min-height: 140px;
+  border: 2px dashed var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); overflow: hidden;
+}
+.dropzone.dragover { border-color: var(--green); color: var(--text); }
+.dropzone img { max-width: 100%; max-height: 220px; display: block; }
+.hint { color: var(--muted); font-size: 11px; margin: 6px 0 0; }
+
+button.primary {
+  width: 100%; margin-top: 10px; padding: 10px; border: 0; border-radius: 999px; cursor: pointer;
+  background: linear-gradient(90deg, var(--teal), var(--green)); color: #0d1a10; font: inherit; font-weight: 800;
+}
+button.primary:disabled { opacity: 0.5; cursor: progress; }
+
+#result { margin-top: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.verdict { display: flex; align-items: center; gap: 8px; }
+.verdict-pill { padding: 3px 10px; border-radius: 999px; color: #fff; font-weight: 800; text-transform: uppercase; font-size: 12px; }
+.confidence { margin-left: auto; color: var(--muted); font-size: 11px; }
+.bar { height: 5px; background: var(--border); border-radius: 3px; margin: 8px 0; overflow: hidden; }
+.bar > span { display: block; height: 100%; }
+#result h2 { font-size: 13px; margin: 10px 0 4px; }
+#result p { margin: 4px 0; line-height: 1.45; }
+#result ul { margin: 4px 0; padding-left: 18px; }
+#result .summary { font-weight: 600; }
+#result .preview { color: var(--muted); font-size: 11px; border-left: 2px solid var(--border); padding-left: 8px; margin-bottom: 8px; max-height: 54px; overflow: hidden; }
+#result img.preview-img { max-width: 100%; max-height: 120px; border-radius: 6px; margin-bottom: 8px; }
+#result .error { color: #ff8a8a; }
+.disclaimer { color: var(--muted); font-size: 10px; margin-top: 8px; }
+
+.spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+
+.settings { margin-top: 12px; color: var(--muted); font-size: 12px; }
+.settings summary { cursor: pointer; }
+.settings label { display: block; margin: 8px 0 4px; }
+.settings .row { display: flex; gap: 6px; }
+.settings .row button { border: 0; border-radius: 8px; padding: 0 12px; background: var(--green); font-weight: 700; cursor: pointer; }
+#result .preview-author { color: var(--text); font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+.empty { color: var(--muted); text-align: center; padding: 32px 12px; line-height: 1.5; }
+.empty strong { color: var(--green); }
