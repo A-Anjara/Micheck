@@ -3,7 +3,7 @@ import { useState } from "react";
 const useDragNDrop = (onChange: (e: File) => void) => {
     const [isDragged, setIsDragged] = useState<boolean>(false);
 
-    const handleDrop = (e: React.DragEvent<any>) => {
+    const handleDrop = (e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -14,13 +14,13 @@ const useDragNDrop = (onChange: (e: File) => void) => {
         setIsDragged(false);
     };
 
-    const handleDragEnter = (e: React.DragEvent<any>) => {
+    const handleDragEnter = (e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragged(true);
     };
 
-    const handleDragLeave = (e: React.DragEvent<any>) => {
+    const handleDragLeave = (e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -29,7 +29,7 @@ const useDragNDrop = (onChange: (e: File) => void) => {
         }
     };
 
-    const handleDragOver = (e: React.DragEvent<any>) => {
+    const handleDragOver = (e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
     };

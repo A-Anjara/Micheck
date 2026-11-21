@@ -4,6 +4,7 @@ import { checkHasAccess } from "../../middlewares/auth";
 
 const handler = async (req: NextRequest) => {
     try {
+        void req;
         const userCount = await prisma.user.count();
 
         return NextResponse.json({ count: userCount }, { status: 200 });

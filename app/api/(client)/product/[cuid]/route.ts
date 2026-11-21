@@ -6,8 +6,8 @@ export async function GET(
     { params }: { params: Promise<{ cuid: string }> },
 ) {
     try {
+        void req;
         const cuid = (await params).cuid;
-        const searchParams = new URL(req.url).searchParams;
 
         const productDetail = await prisma.product.findUnique({
             where: {

@@ -4,7 +4,7 @@ import { RunnableLike } from "@langchain/core/runnables";
 export const invokeChainText = async <MT extends RunnableLike>(
     model: MT,
     promptTemplate: ChatPromptTemplate,
-    templateVariable: Record<string, any>,
+    templateVariable: Record<string, unknown>,
 ) => {
     await promptTemplate.format(templateVariable);
 

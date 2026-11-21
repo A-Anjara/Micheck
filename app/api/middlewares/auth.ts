@@ -1,8 +1,7 @@
-import { AdminRole } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { getSession } from "@/lib/sessions/dbSession";
-import { INextauthSession, NextRequestWithId } from "@/types";
+import type { AdminRole, INextauthSession, NextRequestWithId } from "@/types";
 import { authOptions } from "@/lib/nextauth";
 import {
     checkIsSuperadmin,
@@ -15,19 +14,25 @@ interface AuthConfig {
     adminRole?: AdminRole;
 }
 
+type RouteHandler = (
+    req: NextRequestWithId,
+    context: unknown,
+) => Promise<NextResponse>;
+
 export const checkHasAccess = (
-    handler: (req: NextRequestWithId, context: any) => Promise<NextResponse>,
+    handler: RouteHandler,
     { type = "db_session", adminRole = "ADMIN" }: AuthConfig = {},
 ) => {
     return async (
         req: NextRequestWithId,
-        context: any,
+        context: unknown,
     ): Promise<NextResponse> => {
         try {
             if (type === "nextauth") {
-                // Handle next-auth sessions
                 return await handleNextAuth(req, handler, context);
-            } else if (type === "db_session") {
+            }
+
+            if (type === "db_session") {
                 const authHeader = req.headers.get("Authorization");
 
                 if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -67,8 +72,8 @@ export const checkHasAccess = (
 
 const handleNextAuth = async (
     req: NextRequestWithId,
-    handler: (req: NextRequestWithId, context: any) => Promise<NextResponse>,
-    context: any,
+    handler: RouteHandler,
+    context: unknown,
 ): Promise<NextResponse> => {
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -88,10 +93,14 @@ const handleDBSession = async (
     req: NextRequestWithId,
     token: string,
     adminRole: AdminRole,
-    handler: (req: NextRequestWithId, context: any) => Promise<NextResponse>,
-    context: any,
+    handler: RouteHandler,
+    context: unknown,
 ): Promise<NextResponse> => {
     const dbSession = await getSession(token);
+
+    if (!dbSession) {
+        return unauthorizedResponse("No session found");
+    }
 
     if (adminRole === "SUPERADMIN") {
         try {
@@ -101,7 +110,7 @@ const handleDBSession = async (
         }
     }
 
-    const expires = new Date(dbSession?.expires!).getTime();
+    const expires = new Date(dbSession.expires ?? 0).getTime();
     if (isTokenExpired(expires)) {
         return unauthorizedResponse("Token has expired");
     }

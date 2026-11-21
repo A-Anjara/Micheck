@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 const handler = async (req: NextRequest) => {
     try {
+        void req;
         const adminData = await prisma.adminInfo.findMany({
             include: {
                 adminFacial: true,

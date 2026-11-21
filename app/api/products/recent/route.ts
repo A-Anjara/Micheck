@@ -4,6 +4,7 @@ import { checkHasAccess } from "../../middlewares/auth";
 
 const handler = async (req: NextRequest) => {
     try {
+        void req;
         const mostSelledProducts = await prisma.product.findMany({
             where: {
                 createdAt: {

@@ -36,7 +36,9 @@ const useDBSession = () => {
                     });
                 }
             } catch (err) {
-                isDevelopment && console.error(err);
+                if (isDevelopment) {
+                    console.error(err);
+                }
             } finally {
                 setLoading(false);
             }

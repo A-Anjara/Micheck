@@ -3,11 +3,11 @@
 import { useLayoutEffect, useState } from "react";
 
 const useViewportDimension = () => {
-    const [viewportHeight, setViewportHeight] = useState<number>(0);
+    const [viewportHeight, setViewportHeight] = useState<number>(() =>
+        typeof window === "undefined" ? 0 : window.scrollY,
+    );
 
     useLayoutEffect(() => {
-        setViewportHeight(window.scrollY);
-
         const handleScroll = () => {
             setViewportHeight(window.scrollY);
         };
