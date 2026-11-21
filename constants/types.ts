@@ -21,3 +21,13 @@ export interface HeroContent {
   ctaLabel: string;
   ctaHref: string;
 }
+
+export interface FeatureItem {
+  description: string;
+}
+
+export interface StepItem {
+  number: string;
+  title: string;
+  description: string;
+}

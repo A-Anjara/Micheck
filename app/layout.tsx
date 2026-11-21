@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className="scroll-smooth">
       <body
-        className={`${montserrat.className} min-h-screen bg-[#140d0b] text-white antialiased`}
+        className={`${montserrat.className} min-h-screen bg-[#180F0C] text-white antialiased`}
       >
         <TanstackProvider>{children}</TanstackProvider>
       </body>
