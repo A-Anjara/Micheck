@@ -6,9 +6,9 @@ export function AnalyzeSection() {
   return (
     <section
       id="verification"
-      className="bg-white px-6 py-20 md:py-28"
+      className="bg-white py-20 md:py-28"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="site-container">
         <h2 className="mx-auto max-w-4xl text-center text-[clamp(2rem,4.2vw,3.9rem)] font-bold leading-[1.1] tracking-tight text-[#18241c]">
           <span className="text-[#6cc671]">{ANALYZE_TITLE.highlight}</span>
           {ANALYZE_TITLE.rest}

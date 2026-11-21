@@ -16,12 +16,6 @@ export interface NavLink {
   href: string;
 }
 
-export interface HeroContent {
-  title: string;
-  ctaLabel: string;
-  ctaHref: string;
-}
-
 export interface FeatureItem {
   description: string;
 }

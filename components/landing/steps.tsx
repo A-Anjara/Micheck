@@ -4,8 +4,8 @@ import { StepCard } from "@/components/ui/step-card";
 
 export function StepsSection() {
   return (
-    <section id="etapes" className="bg-[#f4faf5] px-4 py-12 md:px-10 md:py-20">
-      <div className="mx-auto max-w-[1392px] rounded-[2.5rem] bg-white px-6 py-14 md:px-12 md:py-20">
+    <section id="etapes" className="bg-[#f4faf5] py-12 md:py-20">
+      <div className="site-container rounded-[2.5rem] bg-white px-6 py-14 md:px-12 md:py-20">
         <h2 className="text-center text-[clamp(1.9rem,3.8vw,3.5rem)] font-bold leading-tight tracking-tight text-[#18241c]">
           {STEPS_TITLE.before}
           <span className="text-[#206c30]">{STEPS_TITLE.highlight}</span>

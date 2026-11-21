@@ -1,15 +1,9 @@
-import type { FeatureItem, HeroContent, NavLink, StepItem } from "./types";
+import type { FeatureItem, NavLink, StepItem } from "./types";
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Accueil", href: "#accueil" },
   { label: "Vérification de contenu", href: "#verification" },
 ];
-
-export const HERO_CONTENT: HeroContent = {
-  title: "Mi-check, le détecteur de fausses informations.",
-  ctaLabel: "Lancer une vérification",
-  ctaHref: "#verification",
-};
 
 export const ANALYZE_TITLE = {
   highlight: "Mi-check",

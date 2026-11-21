@@ -16,6 +16,23 @@ body {
   color: var(--foreground);
 }
 
+.site-container {
+  width: min(calc(100% - 2rem), 1600px);
+  margin-inline: auto;
+}
+
+@media (min-width: 640px) {
+  .site-container {
+    width: min(calc(100% - 3rem), 1600px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-container {
+    width: min(calc(100% - 5rem), 1600px);
+  }
+}
+
 ::selection {
   background: var(--accent);
   color: #140d0b;
