@@ -28,3 +28,24 @@ Retain qualifying friction even if it is later fixed or worked around; record th
 Before the final response, run one reporting pass. If candidates remain, from this file's directory run `npx --no-install next internal agent-feedback-instructions` once without piping or truncating its output. Follow its output or error guidance. If a network sandbox blocks it, retry with network access; if it still returns no output, continue normally.
 
 <!-- END:nextjs-agent-feedback -->
+
+# Repository instructions
+
+## Stack
+
+Next.js App Router (TypeScript, React) with API routes under `app/api`. Data access goes through the `prisma` singleton from `@/lib/prisma`; external helpers live in `@/lib`.
+
+## Commands
+
+- Install: `npm i` (run at the repository root, where `package.json` lives).
+- Dev server: `npm run dev`
+- Lint: `npm run lint`
+- Typecheck: `npx tsc --noEmit`
+
+## API conventions
+
+Use the `api-route-builder` skill (`.agents/skills/api-route-builder/SKILL.md`) for any work on `app/api`. Protected routes go through `checkHasAccess` from `app/api/middlewares/auth.ts`; responses use `NextResponse.json` with explicit status codes.
+
+## Current state
+
+The API helper modules referenced by routes are present in this checkout: `@/lib/prisma`, `@/lib/nextauth`, `@/lib/stripe`, `@/lib/sessions/dbSession`, `@/lib/api-utils`, `@/lib/sqlQuery`, `@/types`, and `@/data/prompt-data`. Keep `.env` values local — never commit secrets.

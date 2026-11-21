@@ -6,7 +6,7 @@ export function PhoneMockup() {
         <div className="pointer-events-none absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-[#4cb83a] opacity-80 blur-[90px]" />
         <div className="pointer-events-none absolute inset-x-0 -bottom-20 h-40 bg-[#0f9d7a] opacity-60 blur-[80px]" />
   
-        {/* Carte gauche inclinée */}
+        {/* Carte gaucheinclinée */}
         <div className="absolute -bottom-16 left-[8%] h-[280px] w-[42%] -rotate-6 rounded-[2rem] bg-[#463c3a]" />
   
         {/* Carte droite inclinée */}

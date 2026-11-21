@@ -22,3 +22,15 @@ export const checkIsSuperadmin = async (
 
 export const fetchApi = (input: string, init?: RequestInit): Promise<Response> =>
   fetch(input, init);
+
+export const isPrerenderBailout = (error: unknown): boolean => {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const digest = (error as Error & { digest?: string }).digest;
+  return (
+    digest === "NEXT_PRERENDER_INTERRUPTED" ||
+    digest === "HANGING_PROMISE_REJECTION"
+  );
+};

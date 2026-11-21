@@ -5,6 +5,7 @@ import type { AdminRole, INextauthSession, NextRequestWithId } from "@/types";
 import { authOptions } from "@/lib/nextauth";
 import {
     checkIsSuperadmin,
+    isPrerenderBailout,
     isTokenExpired,
     unauthorizedResponse,
 } from "@/lib/api-utils";
@@ -57,6 +58,10 @@ export const checkHasAccess = (
 
             return unauthorizedResponse("Unknown token type");
         } catch (error) {
+            if (isPrerenderBailout(error)) {
+                throw error;
+            }
+
             console.error("Authentication error:", error);
             const message =
                 error instanceof Error

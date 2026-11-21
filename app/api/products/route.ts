@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { isPrerenderBailout } from "@/lib/api-utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -46,6 +47,10 @@ export const GET = async (req: NextRequest) => {
             { status: 200 },
         );
     } catch (err) {
+        if (isPrerenderBailout(err)) {
+            throw err;
+        }
+
         console.error(err);
         return NextResponse.json(
             { message: "Internal Server Error" },

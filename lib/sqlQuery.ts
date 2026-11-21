@@ -1,6 +1,4 @@
-const ALLOWED_TABLES = ["transaction", "user", "product"] as const;
-
-export type StatsTable = (typeof ALLOWED_TABLES)[number];
+export type StatsTable = "transaction" | "user" | "product";
 
 export const statsSQLQuery = (
   table: StatsTable,
