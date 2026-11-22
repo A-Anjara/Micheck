@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Mi-check",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Le détecteur de fausses informations : vérifiez les posts Facebook, un texte ou une image en un clic.",
   "icons": {
     "16": "icons/icon16.png",
@@ -37,8 +37,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.facebook.com/*",
-        "https://web.facebook.com/*"
+        "https://*.facebook.com/*",
+        "http://localhost:3000/demo*"
       ],
       "js": [
         "content-facebook.js"

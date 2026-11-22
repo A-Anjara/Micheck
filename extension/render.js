@@ -25,6 +25,27 @@ function renderPreview(check) {
   return parts;
 }
 
+function renderSource(source) {
+  let href = null;
+  try {
+    const url = new URL(source.url);
+    if (url.protocol === "https:" || url.protocol === "http:") href = url.href;
+  } catch {
+    /* URL invalide : affichée sans lien */
+  }
+  const title = href
+    ? el("a", { href, target: "_blank", rel: "noopener noreferrer", textContent: source.title })
+    : el("span", { textContent: source.title });
+
+  return el(
+    "li",
+    {},
+    title,
+    el("div", { className: "source-domain", textContent: source.domain }),
+    source.excerpt ? el("blockquote", { textContent: source.excerpt }) : null,
+  );
+}
+
 export function renderCheck(container, check) {
   if (!check) {
     container.hidden = true;
@@ -75,11 +96,21 @@ export function renderCheck(container, check) {
   if (r.advice) {
     container.append(el("h2", { textContent: "Comment vérifier" }), el("p", { textContent: r.advice }));
   }
+  if (r.sources?.length) {
+    container.append(
+      el("h2", { textContent: `Sources consultées (${r.sources.length})` }),
+      el("ol", { className: "sources" }, ...r.sources.map(renderSource)),
+    );
+  } else if (r.webSearch) {
+    container.append(el("p", { className: "hint", textContent: "Aucune source trouvée par la recherche web." }));
+  }
+
   container.append(
     el("p", {
       className: "disclaimer",
-      textContent:
-        "Analyse générée par IA, sans accès à internet. Croisez toujours avec des sources fiables.",
+      textContent: r.webSearch
+        ? "Analyse générée par IA à partir d'une recherche web. Ouvrez les sources pour vérifier."
+        : "Analyse générée par IA, sans recherche web. Croisez toujours avec des sources fiables.",
     }),
   );
 }

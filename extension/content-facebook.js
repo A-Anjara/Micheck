@@ -4,6 +4,7 @@
 (() => {
   if (window.__micheckLoaded) return;
   window.__micheckLoaded = true;
+  console.info("[Mi-check] script chargé sur", location.hostname);
 
   const POST_SELECTORS = [
     "div[aria-posinset]", // posts du fil d'actualité
@@ -227,26 +228,172 @@
 
   // --- Détection des posts ------------------------------------------------------
 
+  // Repère le plus stable : le bouton « … » présent dans l'en-tête de chaque post.
+  const POST_MENU_SELECTORS = [
+    '[aria-label="Actions pour cette publication"]',
+    '[aria-label="Actions for this post"]',
+    '[aria-label^="Actions pour cette publication"]',
+    '[aria-label^="Actions for this post"]',
+  ].join(",");
+
+  const STRONG_POST = 'div[aria-posinset], [data-pagelet^="FeedUnit"]';
+  const STOP_AT = 'body, [role="main"], [role="feed"], [role="complementary"], [role="navigation"]';
+
+  const isCommentArticle = (el) =>
+    el.getAttribute("role") === "article" && COMMENT_LABEL.test(el.getAttribute("aria-label") || "");
+
+  // Barre d'actions sous chaque post (J'aime / Commenter / Partager).
+  const ACTION_SELECTORS = [
+    '[data-ad-rendering-role="like_button"]',
+    '[data-ad-rendering-role="comment_button"]',
+    '[data-ad-rendering-role="share_button"]',
+    '[aria-label="J’aime"]',
+    "[aria-label=\"J'aime\"]",
+    '[aria-label="Like"]',
+    '[aria-label="Commenter"]',
+    '[aria-label="Comment"]',
+    '[aria-label="Laissez un commentaire"]',
+    '[aria-label="Leave a comment"]',
+    '[aria-label^="Envoyer ceci à vos amis"]',
+    '[aria-label^="Send this to friends"]',
+  ].join(",");
+
+  const isPostBoundary = (el) =>
+    el.matches(STRONG_POST) || (el.getAttribute("role") === "article" && !isCommentArticle(el));
+
+  /**
+   * Remonte depuis un repère (menu « … », bloc de texte) jusqu'à la carte du
+   * post : le PLUS PETIT ancêtre qui contient aussi la barre d'actions.
+   * (Remonter au maximum englobait tout le fil quand un seul post était chargé.)
+   */
+  function climbToPost(marker, found = new Set()) {
+    let el = marker;
+    while (el.parentElement && !el.parentElement.matches(STOP_AT)) {
+      const prev = el;
+      el = el.parentElement;
+      if (isPostBoundary(el)) return el;
+      // On déborde sur un autre post : on garde le niveau précédent.
+      if (el.querySelector("[data-micheck-id]") || [...found].some((c) => el.contains(c))) {
+        return prev === marker ? null : prev;
+      }
+      if (el.querySelector(ACTION_SELECTORS)) return el;
+    }
+    return null;
+  }
+
+  /** Un conteneur marqué qui englobe plusieurs posts est démarqué pour être redécoupé. */
+  function isTooBig(post) {
+    if (post.querySelector("[data-micheck-id]")) return true;
+    const cards = new Set();
+    for (const m of post.querySelectorAll(POST_MENU_SELECTORS)) {
+      const card = climbToPost(m);
+      if (card && card !== post && post.contains(card)) cards.add(card);
+    }
+    return cards.size >= 2;
+  }
+
+  function detachButton(post) {
+    const id = post.dataset.micheckId;
+    post.querySelector(":scope > .micheck-host")?.remove();
+    delete post.dataset.micheckId;
+    buttons.delete(id);
+  }
+
+  const stats = { menus: 0, messages: 0, legacy: 0 };
+
   function findPosts() {
-    const candidates = new Set(document.querySelectorAll(POST_SELECTORS));
-    return [...candidates].filter((el) => {
-      if (el.dataset.micheckId || el.offsetHeight < 80) return false;
-      // Ne garder que le conteneur le plus externe, et ignorer les commentaires.
-      if (el.getAttribute("role") === "article" && COMMENT_LABEL.test(el.getAttribute("aria-label") || "")) {
-        return false;
+    const found = new Set();
+    // Déjà traité : le nœud est dans un post équipé, ou en contient un.
+    const isDone = (node) =>
+      Boolean(node.closest("[data-micheck-id]") || node.querySelector("[data-micheck-id]"));
+
+    const menus = document.querySelectorAll(POST_MENU_SELECTORS);
+    const messages = document.querySelectorAll(MESSAGE_SELECTORS);
+    const legacy = document.querySelectorAll(POST_SELECTORS);
+    Object.assign(stats, { menus: menus.length, messages: messages.length, legacy: legacy.length });
+
+    for (const m of menus) {
+      if (!isDone(m)) {
+        const post = climbToPost(m, found);
+        if (post) found.add(post);
       }
-      for (let p = el.parentElement; p; p = p.parentElement) {
-        if (candidates.has(p) || p.dataset?.micheckId) return false;
+    }
+    for (const m of messages) {
+      if (!isDone(m) && ![...found].some((p) => p.contains(m))) {
+        const post = climbToPost(m, found);
+        if (post) found.add(post);
       }
-      return true;
-    });
+    }
+    for (const el of legacy) {
+      if (!isDone(el) && !isCommentArticle(el) && ![...found].some((p) => p.contains(el) || el.contains(p))) {
+        found.add(el);
+      }
+    }
+
+    // Ne garder que les conteneurs les plus externes, visibles, pas déjà traités.
+    return [...found].filter(
+      (el) =>
+        !isDone(el) &&
+        el.offsetHeight >= 80 &&
+        ![...found].some((other) => other !== el && other.contains(el)),
+    );
+  }
+
+  // --- Indicateur de diagnostic (bas à gauche) -----------------------------------
+
+  // Construit en DOM pur : certains sites (Trusted Types) bloquent le HTML brut.
+  const badgeHost = document.createElement("div");
+  const badgeShadow = badgeHost.attachShadow({ mode: "closed" });
+  const badgeStyle = document.createElement("style");
+  badgeStyle.textContent = `
+      :host { all: initial; position: fixed; left: 12px; bottom: 12px; z-index: 2147483647; }
+      div { font: 600 11px/1 system-ui, sans-serif; color: #f5f1ef; background: #180f0ce6;
+            border: 1px solid #6cc671; border-radius: 999px; padding: 6px 10px; cursor: pointer; }
+      b { color: #6cc671; }`;
+  const badge = document.createElement("div");
+  badge.title = "Cliquer pour masquer";
+  badgeShadow.append(badgeStyle, badge);
+  let badgeHidden = false;
+  badge.addEventListener("click", () => {
+    badgeHidden = true;
+    badgeHost.remove();
+  });
+
+  /** Facebook peut retirer les nœuds inconnus : on remet le badge si besoin. */
+  function ensureBadge() {
+    if (!badgeHidden && !badgeHost.isConnected) document.body.append(badgeHost);
+  }
+
+  let lastLog = "";
+  function report() {
+    ensureBadge();
+    badge.replaceChildren();
+    const strong = document.createElement("b");
+    strong.textContent = "Mi-check";
+    badge.append(strong, ` · ${buttons.size} post(s) détecté(s)`);
+
+    const line = `[Mi-check] posts: ${buttons.size} | menus « … »: ${stats.menus} | textes: ${stats.messages} | anciens sélecteurs: ${stats.legacy}`;
+    if (line !== lastLog) {
+      console.info(line);
+      lastLog = line;
+    }
   }
 
   function scan() {
-    for (const post of findPosts()) {
-      // Les posts se chargent progressivement : on attend qu'il y ait du contenu.
-      if (getPostText(post).length >= MIN_TEXT || getPostImage(post)) attachButton(post);
+    try {
+      for (const post of document.querySelectorAll("[data-micheck-id]")) {
+        const entry = buttons.get(post.dataset.micheckId);
+        // On ne touche pas à un post en cours d'analyse ou déjà vérifié.
+        if (entry?.button.dataset.state === "idle" && isTooBig(post)) detachButton(post);
+      }
+      for (const post of findPosts()) {
+        // Les posts se chargent progressivement : on attend qu'il y ait du contenu.
+        if (getPostText(post).length >= MIN_TEXT || getPostImage(post)) attachButton(post);
+      }
+    } catch (error) {
+      console.error("[Mi-check] erreur pendant la détection :", error);
     }
+    report();
   }
 
   let scheduled = false;

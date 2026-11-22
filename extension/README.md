@@ -7,9 +7,17 @@ Vérifie les **posts Facebook**, un **texte** ou une **image** via l'API Next.js
 ## Lancer
 
 1. À la racine du repo, créer `.env.local` avec `OPENROUTER_API_KEY=...`
-   (optionnel : `OPENROUTER_MODEL`, défaut `google/gemma-4-31b-it:free` ; `OPENROUTER_FALLBACK_MODELS`, liste séparée par des virgules), puis `npm run dev`.
+   (optionnel : `OPENROUTER_MODEL`, défaut `google/gemma-4-31b-it:free` ; `OPENROUTER_FALLBACK_MODELS`, liste séparée par des virgules ; `OPENROUTER_WEB_SEARCH=false` pour couper la recherche web, `OPENROUTER_WEB_MAX_RESULTS` = nombre de sources, défaut 5), puis `npm run dev`.
 2. Ouvrir `chrome://extensions` (ou `edge://extensions`), activer le **mode développeur**.
 3. **Charger l'extension non empaquetée** → choisir le dossier `extension/`.
+
+## Contexte malgache
+
+L'analyse est orientée **Madagascar** : sources malgaches prioritaires (institutions, BNGRC, JIRAMA, CENI, presse locale…), désinformations typiques (faux communiqués, arnaques mobile money, fausses alertes cyclone/délestage, faux résultats d'examens…). La réponse est rédigée **dans la langue du post** (malgache ou français), détectée côté serveur. Le prompt est dans `lib/laingchain/verifyContent.ts` (`MADAGASCAR_CONTEXT`).
+
+## Recherche web
+
+Quand il y a du texte, l'API active le plugin web d'OpenRouter : le modèle s'appuie sur des résultats de recherche récents, et le panneau affiche les **sources consultées** (lien, site, extrait). ⚠️ Payant : ~0,007 $ par vérification, crédits OpenRouter nécessaires. Les images seules sont analysées sans recherche web.
 
 ## Tester
 
