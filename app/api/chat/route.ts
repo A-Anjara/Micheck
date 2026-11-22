@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chatWithMicheck, type ChatTurn } from "@/lib/laingchain/chat";
-import { ModelsBusyError } from "@/lib/laingchain/openrouter";
+import { ConfigError, ModelsBusyError } from "@/lib/laingchain/openrouter";
 
 const MAX_TURNS = 20;
 const MAX_MESSAGE_LENGTH = 4000;
@@ -73,6 +73,13 @@ export async function POST(req: NextRequest) {
         });
         return NextResponse.json(reply, { status: 200 });
     } catch (error) {
+        if (error instanceof ConfigError) {
+            console.error("Configuration error:", error.message);
+            return NextResponse.json(
+                { message: error.message },
+                { status: 500 },
+            );
+        }
         if (error instanceof ModelsBusyError) {
             return NextResponse.json(
                 { message: error.message },

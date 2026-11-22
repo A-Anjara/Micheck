@@ -124,6 +124,14 @@ export interface CompletionResult<T> {
     webSearch: boolean;
 }
 
+/** Problème de configuration serveur (clé absente ou refusée) : message affichable. */
+export class ConfigError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "ConfigError";
+    }
+}
+
 /** 402 : plus de crédits OpenRouter (la recherche web est payante). */
 class InsufficientCreditsError extends Error {}
 
@@ -162,6 +170,11 @@ const requestOpenRouter = async <T>(
     if (!res.ok) {
         const message = `OpenRouter ${res.status}: ${data.error?.message ?? res.statusText}`;
         if (res.status === 402) throw new InsufficientCreditsError(message);
+        if (res.status === 401 || res.status === 403) {
+            throw new ConfigError(
+                "Clé OPENROUTER_API_KEY refusée par OpenRouter : vérifiez sa valeur (sans guillemets ni espaces) dans les variables d'environnement, puis redéployez.",
+            );
+        }
         throw RETRYABLE_STATUS.has(res.status)
             ? new RetryableError(message)
             : new Error(message);
@@ -195,8 +208,10 @@ export const chatCompletion = async <T = string>(
     options: CompletionOptions<T>,
 ): Promise<CompletionResult<T>> => {
     const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-        throw new Error("OPENROUTER_API_KEY is not set");
+    if (!apiKey?.trim()) {
+        throw new ConfigError(
+            "Clé OPENROUTER_API_KEY manquante sur le serveur : ajoutez-la dans les variables d'environnement (.env.local ou Vercel), puis redémarrez / redéployez.",
+        );
     }
 
     const webSearch = Boolean(options.webSearch) && Date.now() >= webPausedUntil;

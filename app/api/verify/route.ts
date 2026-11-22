@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ModelsBusyError, verifyContent } from "@/lib/laingchain/verifyContent";
+import { ConfigError } from "@/lib/laingchain/openrouter";
 
 const MAX_TEXT_LENGTH = 8000;
 // Taille max de l'image en base64 (~4 Mo).
@@ -64,6 +65,13 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(result, { status: 200 });
     } catch (error) {
+        if (error instanceof ConfigError) {
+            console.error("Configuration error:", error.message);
+            return NextResponse.json(
+                { message: error.message },
+                { status: 500 },
+            );
+        }
         if (error instanceof ModelsBusyError) {
             return NextResponse.json(
                 { message: error.message },
