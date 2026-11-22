@@ -25,3 +25,8 @@ export interface StepItem {
   title: string;
   description: string;
 }
+
+export interface ExtensionFeature {
+  title: string;
+  description: string;
+}

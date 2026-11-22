@@ -21,7 +21,7 @@ export function Hero() {
         </h1>
 
         <div className="mt-7 w-full max-w-[360px] sm:mt-10 sm:w-auto">
-          <ButtonLink href="#verification" className="w-full sm:w-auto focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          <ButtonLink href="#verifier" className="w-full sm:w-auto focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             Lancer une vérification
           </ButtonLink>
         </div>

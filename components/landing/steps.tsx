@@ -1,5 +1,6 @@
 import { STEP_ITEMS, STEPS_TITLE } from "@/constants/constants";
 import { PhoneFrame } from "@/components/ui/phone-frame";
+import { ChatScreen } from "@/components/ui/phone-screens";
 import { StepCard } from "@/components/ui/step-card";
 
 export function StepsSection() {
@@ -14,17 +15,8 @@ export function StepsSection() {
 
         <div className="relative mt-14">
           <div className="mx-auto w-full max-w-[340px] sm:max-w-[400px]">
-            <PhoneFrame screenClassName="bg-[#0b0807]">
-              <div className="relative h-full w-full bg-[radial-gradient(circle_at_30%_20%,#5a3a2e,#1a100d_55%,#050403)]">
-                <div
-                  aria-hidden
-                  className="absolute -right-16 top-1/3 h-56 w-56 rounded-full bg-[#d9743f]/25 blur-3xl"
-                />
-                <div
-                  aria-hidden
-                  className="absolute -left-16 bottom-1/4 h-56 w-56 rounded-full bg-[#b34a1f]/20 blur-3xl"
-                />
-              </div>
+            <PhoneFrame>
+              <ChatScreen />
             </PhoneFrame>
           </div>
 

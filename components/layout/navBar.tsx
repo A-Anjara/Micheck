@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NAV_LINKS } from "@/constants/constants";
 import { LogoLight } from "@/components/ui/logo/logo";
+import { OpenChatButton } from "@/components/chat/open-chat-button";
 
 export function NavBar() {
   return (
@@ -30,6 +31,9 @@ export function NavBar() {
               {link.label}
             </Link>
           ))}
+          <OpenChatButton className="hidden min-h-9 items-center rounded-full border border-white/25 px-4 text-white transition-colors duration-200 hover:border-[#A8C37D] hover:text-[#A8C37D] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:inline-flex">
+            💬 Discuter
+          </OpenChatButton>
         </nav>
       </div>
     </header>

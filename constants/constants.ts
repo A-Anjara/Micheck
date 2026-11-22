@@ -1,8 +1,10 @@
-import type { FeatureItem, NavLink, StepItem } from "./types";
+import type { ExtensionFeature, FeatureItem, NavLink, StepItem } from "./types";
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Accueil", href: "#accueil" },
-  { label: "Vérification de contenu", href: "#verification" },
+  { label: "Vérifier", href: "#verifier" },
+  { label: "Comment ça marche", href: "#etapes" },
+  { label: "Extension", href: "#extension" },
 ];
 
 export const ANALYZE_TITLE = {
@@ -12,14 +14,19 @@ export const ANALYZE_TITLE = {
 
 export const FEATURE_ITEMS: FeatureItem[] = [
   {
-    description: "Analysez un texte, une photo ou une vidéo au même endroit.",
+    description:
+      "Analysez un texte ou une photo au même endroit, en malgache ou en français.",
   },
   {
     description:
       "Un score de confiance et une explication simple pour comprendre le résultat.",
   },
   {
-    description: "Repérez les deepfakes et les contenus générés par IA.",
+    description:
+      "Des sources fiables malgaches et internationales consultées en temps réel.",
+  },
+  {
+    description: "Repérez les images retouchées ou générées par IA.",
   },
 ];
 
@@ -45,4 +52,29 @@ export const STEP_ITEMS: StepItem[] = [
     title: "Comprenez",
     description: "Recevez un score et une explication.",
   },
+];
+
+export const EXTENSION_FEATURES: ExtensionFeature[] = [
+  {
+    title: "Un bouton sur chaque post",
+    description: "Détection automatique des posts pendant le défilement.",
+  },
+  {
+    title: "Texte + image analysés",
+    description: "Le texte complet, l'image et l'auteur du post sont pris en compte.",
+  },
+  {
+    title: "Verdict à côté du fil",
+    description: "Un panneau latéral affiche le verdict, les indices et les sources.",
+  },
+  {
+    title: "Clic droit partout",
+    description: "Vérifiez un texte sélectionné ou une image sur n'importe quel site.",
+  },
+];
+
+export const EXTENSION_STEPS: string[] = [
+  "Ouvrez chrome://extensions (ou edge://extensions) et activez le « Mode développeur ».",
+  "Cliquez sur « Charger l'extension non empaquetée » et choisissez le dossier extension/ du projet.",
+  "Épinglez Mi-check, ouvrez Facebook, puis cliquez sur « ✓ Vérifier » sur un post.",
 ];
