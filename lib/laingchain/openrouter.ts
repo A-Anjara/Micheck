@@ -108,7 +108,8 @@ export interface ChatMessage {
 }
 
 export interface CompletionOptions<T> {
-    messages: ChatMessage[];
+    /** Fonction : les messages dépendent de la recherche web réellement utilisée. */
+    messages: ChatMessage[] | ((webSearch: boolean) => ChatMessage[]);
     webSearch?: boolean;
     temperature?: number;
     /** Transforme la réponse ; une exception déclenche une nouvelle tentative. */
@@ -119,7 +120,16 @@ export interface CompletionResult<T> {
     result: T;
     sources: WebSource[];
     model?: string;
+    /** Recherche web réellement utilisée (désactivée si crédits insuffisants). */
+    webSearch: boolean;
 }
+
+/** 402 : plus de crédits OpenRouter (la recherche web est payante). */
+class InsufficientCreditsError extends Error {}
+
+// Après un 402, la recherche web est mise en pause pour ne pas échouer à chaque appel.
+const WEB_PAUSE_MS = 10 * 60 * 1000;
+let webPausedUntil = 0;
 
 const requestOpenRouter = async <T>(
     apiKey: string,
@@ -144,13 +154,14 @@ const requestOpenRouter = async <T>(
             ...(webSearch && {
                 plugins: [{ id: "web", max_results: WEB_MAX_RESULTS }],
             }),
-            messages,
+            messages: typeof messages === "function" ? messages(webSearch) : messages,
         }),
     });
 
     const data = (await res.json().catch(() => ({}))) as OpenRouterResponse;
     if (!res.ok) {
         const message = `OpenRouter ${res.status}: ${data.error?.message ?? res.statusText}`;
+        if (res.status === 402) throw new InsufficientCreditsError(message);
         throw RETRYABLE_STATUS.has(res.status)
             ? new RetryableError(message)
             : new Error(message);
@@ -171,7 +182,12 @@ const requestOpenRouter = async <T>(
             `Unparsable model response (${data.model ?? "?"}): ${content.slice(0, 300).replace(/\s+/g, " ")}`,
         );
     }
-    return { result, sources: extractSources(message?.annotations), model: data.model };
+    return {
+        result,
+        sources: extractSources(message?.annotations),
+        model: data.model,
+        webSearch,
+    };
 };
 
 /** Appel OpenRouter avec modèles de secours et nouvelles tentatives. */
@@ -183,11 +199,22 @@ export const chatCompletion = async <T = string>(
         throw new Error("OPENROUTER_API_KEY is not set");
     }
 
+    const webSearch = Boolean(options.webSearch) && Date.now() >= webPausedUntil;
+    const effective = { ...options, webSearch };
+
     for (const { models, delayMs } of ATTEMPTS) {
         if (delayMs) await sleep(delayMs);
         try {
-            return await requestOpenRouter(apiKey, models, options);
+            return await requestOpenRouter(apiKey, models, effective);
         } catch (error) {
+            // Plus de crédits : on repasse sans recherche web (modèles gratuits).
+            if (error instanceof InsufficientCreditsError && webSearch) {
+                webPausedUntil = Date.now() + WEB_PAUSE_MS;
+                console.warn(
+                    "OpenRouter: crédits insuffisants pour la recherche web, nouvel essai sans recherche web (pause 10 min).",
+                );
+                return chatCompletion({ ...options, webSearch: false });
+            }
             if (!(error instanceof RetryableError)) throw error;
             console.warn(`OpenRouter retry (${models.join(", ")}):`, error.message);
         }

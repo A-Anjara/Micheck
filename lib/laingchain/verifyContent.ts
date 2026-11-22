@@ -178,14 +178,14 @@ export const verifyContent = async ({
 
     // Sans texte (image seule), une recherche web n'aurait pas de requête utile.
     const webSearch = WEB_SEARCH && Boolean(text);
-    const { result: data, sources } = await chatCompletion({
-        messages: [
-            { role: "system", content: buildSystemPrompt(webSearch) },
+    const { result: data, sources, webSearch: usedWeb } = await chatCompletion({
+        messages: (web) => [
+            { role: "system", content: buildSystemPrompt(web) },
             { role: "user", content: userContent },
         ],
         webSearch,
         parse: extractJson,
     });
 
-    return normalizeResult(data, sources, webSearch);
+    return normalizeResult(data, sources, usedWeb);
 };

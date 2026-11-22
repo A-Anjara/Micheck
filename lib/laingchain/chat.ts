@@ -41,12 +41,12 @@ export const chatWithMicheck = async (
     const language = detectLanguage(lastUser?.content ?? "");
     const webSearch = WEB_SEARCH && wantWeb;
 
-    const messages: ChatMessage[] = [
-        { role: "system", content: buildChatPrompt(webSearch, language) },
+    const messages = (web: boolean): ChatMessage[] => [
+        { role: "system", content: buildChatPrompt(web, language) },
         ...turns.map((t) => ({ role: t.role, content: t.content })),
     ];
 
-    const { result, sources } = await chatCompletion({
+    const { result, sources, webSearch: usedWeb } = await chatCompletion({
         messages,
         webSearch,
         temperature: 0.3,
@@ -57,5 +57,5 @@ export const chatWithMicheck = async (
         },
     });
 
-    return { message: result, sources, webSearch };
+    return { message: result, sources, webSearch: usedWeb };
 };
